@@ -38,7 +38,7 @@ spec:
         - name: SERVICE_NAME
           value: "paymentservice"
         - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-          value: "http://otelcollector:4317"
+          value: "http://jaeger:4317"
         - name: OTEL_RESOURCE_ATTRIBUTES
           value: "service.name=paymentservice,service.version=1.0.0"
         - name: POD_NAME
