@@ -1,0 +1,12 @@
+docker pull ystheory/adservice:2.0.0;
+docker pull ystheory/cartservice:2.0.0;
+docker pull ystheory/checkoutservice:2.0.0;
+docker pull ystheory/currencyservice:2.0.0;
+docker pull ystheory/emailservice:2.0.0;
+docker pull ystheory/frontend:2.0.0;
+docker pull ystheory/loadgenerator:2.0.0;
+docker pull ystheory/otelcollector:2.0.0;
+docker pull ystheory/paymentservice:2.0.0;
+docker pull ystheory/productcatalogservice:2.0.0;
+docker pull ystheory/recommendationservice:2.0.0;
+docker pull ystheory/shippingservice:2.0.0;

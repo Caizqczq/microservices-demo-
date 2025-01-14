@@ -1,0 +1,27 @@
+receivers:
+  nop:
+
+exporters:
+  nop:
+
+processors:
+  tail_sampling:
+    decision_wait: 10s
+    num_traces: 100
+    expected_new_traces_per_sec: 10
+    policies:
+      [
+          {
+            name: test-policy-5,
+            type: status_code,
+            status_code: {status_codes: [ERROR]}
+          }
+      ]
+
+service:
+  pipelines:
+    traces:
+      receivers: [nop]
+      processors: [tail_sampling]
+      exporters: [nop]
+

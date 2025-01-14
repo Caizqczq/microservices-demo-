@@ -1,0 +1,9 @@
+mkdir hipster-images
+cd hipster-images/
+
+
+vim /home/dell/xsy/clash/config.yaml
+vim /etc/docker/daemon.json
+
+systemctl daemon-reload
+systemctl restart docker
