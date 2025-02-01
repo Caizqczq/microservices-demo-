@@ -137,6 +137,13 @@ containername=shippingservice
 run "-p 50051 -e PORT=50051 \
      " "$containername"
 
+containername=userservice
+run "-p 1122:1122 -e PORT=1122 \
+     -e SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/onlineboutique?useSSL=false&allowPublicKeyRetrieval=true \
+     -e SPRING_DATASOURCE_USERNAME=root \
+     -e SPRING_DATASOURCE_PASSWORD="123456" \
+     " "$containername"
+
 #containername=loadgenerator
 #run "-e FRONTEND_ADDR=frontend:8080 \
 #     -e USERS=10" "$containername"
