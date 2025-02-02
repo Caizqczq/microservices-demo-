@@ -1,0 +1,58 @@
+# mysql.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-user
+spec:
+  selector:
+    matchLabels:
+      app: mysql-user
+  template:
+    metadata:
+      labels:
+        app: mysql-user
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "123456"
+        - name: MYSQL_DATABASE
+          value: "userservice"
+        readinessProbe:
+          periodSeconds: 5
+          tcpSocket:
+            port: 3306
+        livenessProbe:
+          periodSeconds: 5
+          tcpSocket:
+            port: 3306
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: mysql-data
+        resources:
+          limits:
+            memory: 512Mi
+            cpu: 250m
+          requests:
+            cpu: 100m
+            memory: 256Mi
+      volumes:
+      - name: mysql-data
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-user
+spec:
+  type: ClusterIP
+  selector:
+    app: mysql-user
+  ports:
+  - name: mysql
+    port: 3306
+    targetPort: 3306

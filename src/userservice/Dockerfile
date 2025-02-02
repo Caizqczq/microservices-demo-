@@ -1,16 +1,25 @@
-FROM eclipse-temurin:17-jdk-alpine as build
+# 构建阶段
+FROM eclipse-temurin:17-jdk-jammy AS build
 WORKDIR /workspace/app
 
-COPY mvnw .
-COPY .mvn .mvn
+# 安装必要的构建工具和依赖
+RUN apt-get update && \
+    apt-get install -y maven protobuf-compiler
+
+# 复制源代码和配置文件
 COPY pom.xml .
-COPY src src
+COPY src ./src
 
-RUN ./mvnw package -DskipTests
+# Maven构建
+RUN mvn clean package -DskipTests
 
-FROM eclipse-temurin:17-jre-alpine
+# 运行阶段
+FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
+
+# 从构建阶段复制编译好的jar
 COPY --from=build /workspace/app/target/*.jar app.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
 
 EXPOSE 1122
+EXPOSE 9555
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

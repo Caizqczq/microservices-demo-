@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.example.userservice.grpc";
+option java_outer_classname = "UserProto";
+option java_generate_equals_and_hash = true;
+
+package userservice;
+
+service UserService {
+  rpc Login (LoginRequest) returns (LoginResponse) {}
+  rpc Check (HealthCheckRequest) returns (HealthCheckResponse) {}
+}
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  int32 code = 1;
+  string message = 2;
+  string token = 3;
+}
+
+message HealthCheckRequest {}
+
+message HealthCheckResponse {
+  enum ServingStatus {
+    UNKNOWN = 0;
+    SERVING = 1;
+    NOT_SERVING = 2;
+  }
+  ServingStatus status = 1;
+}

@@ -33,7 +33,6 @@ import (
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/propagation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -88,8 +87,7 @@ type frontendServer struct {
 
 func InitTracerProvider() *sdktrace.TracerProvider {
 	ctx := context.Background()
-	
-	
+
 	res, err := resource.New(ctx,
 		resource.WithAttributes(
 			// the service name used to display traces in backends
@@ -102,7 +100,7 @@ func InitTracerProvider() *sdktrace.TracerProvider {
 		log.Fatalf("Failed to create resource: %v", err)
 
 	}
-	
+
 	exporter, err := otlptracegrpc.New(ctx)
 	if err != nil {
 		log.Fatal(err)
@@ -133,6 +131,15 @@ func main() {
 	}
 	addr := os.Getenv("LISTEN_ADDR")
 	svc := new(frontendServer)
+
+	// Set up user service address from environment
+	userSvcAddr := os.Getenv("USER_SERVICE_ADDR")
+	if userSvcAddr == "" {
+		log.Info("USER_SERVICE_ADDR not set, using default: http://userservice:1122")
+		userSvcAddr = "http://userservice:1122"
+	}
+	os.Setenv("USER_SERVICE_ADDR", userSvcAddr)
+
 	mustMapEnv(&svc.productCatalogSvcAddr, "PRODUCT_CATALOG_SERVICE_ADDR")
 	mustMapEnv(&svc.currencySvcAddr, "CURRENCY_SERVICE_ADDR")
 	mustMapEnv(&svc.cartSvcAddr, "CART_SERVICE_ADDR")
@@ -162,6 +169,8 @@ func main() {
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 	r.HandleFunc("/robots.txt", func(w http.ResponseWriter, _ *http.Request) { fmt.Fprint(w, "User-agent: *\nDisallow: /") })
 	r.HandleFunc("/_healthz", func(w http.ResponseWriter, _ *http.Request) { fmt.Fprint(w, "ok") })
+	r.HandleFunc("/login", svc.loginHandler).Methods(http.MethodGet)
+	r.HandleFunc("/api/login", svc.apiLoginHandler).Methods(http.MethodPost)
 
 	var handler http.Handler = r
 	handler = &logHandler{log: log, next: handler} // add logging

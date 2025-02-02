@@ -260,3 +260,25 @@ message Ad {
     // short advertisement text to display.
     string text = 2;
 }
+
+// -------------User service-----------------
+
+service UserService {
+    rpc Login(LoginRequest) returns (LoginResponse) {}
+}
+
+message LoginRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message LoginResponse {
+    int32 code = 1;
+    string message = 2;
+    string token = 3;
+}
+
+message UserInfo {
+    int64 id = 1;
+    string username = 2;
+}

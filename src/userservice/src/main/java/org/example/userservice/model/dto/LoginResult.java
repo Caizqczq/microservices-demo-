@@ -1,10 +1,20 @@
 package org.example.userservice.model.dto;
 
-import org.example.userservice.entity.User;
+
+import org.example.userservice.model.entity.User;
 
 public class LoginResult {
     private Integer code;
     private String message;
+    private String token;
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     public User getData() {
         return data;

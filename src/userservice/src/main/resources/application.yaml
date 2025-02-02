@@ -4,12 +4,13 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/onlineboutique?useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/userservice?useSSL=false&allowPublicKeyRetrieval=true
     username: root
     password: "123456"
 
 server:
   port: 1122
+
 
 mybatis-plus:
   configuration:
@@ -29,3 +30,7 @@ springdoc:
 
 knife4j:
   enable: true
+grpc:
+  server:
+    port: 9555
+    reflection-service-enabled: true

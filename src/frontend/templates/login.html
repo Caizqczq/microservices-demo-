@@ -1,0 +1,46 @@
+{{ define "login" }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>登录</title>
+  <link rel="stylesheet" href="/static/styles/styles.css">
+</head>
+<body>
+  <form id="login-form">
+    <div class="cymbal-form-field">
+      <label for="username">用户名</label>
+      <input type="text" id="username" name="username" required>
+    </div>
+    <div class="cymbal-form-field">
+      <label for="password">密码</label>
+      <input type="password" id="password" name="password" required>
+    </div>
+    <button type="submit" class="cymbal-button-primary">登录</button>
+  </form>
+
+  <script>
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = {
+        username: formData.get('username'),
+        password: formData.get('password')
+      };
+
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        window.location.href = '/';
+      } else {
+        alert('登录失败');
+      }
+    });
+  </script>
+</body>
+</html>
+{{ end }}

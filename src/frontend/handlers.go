@@ -15,9 +15,12 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"math/rand"
 	"net"
 	"net/http"
@@ -515,4 +518,72 @@ func stringinSlice(slice []string, val string) bool {
 		}
 	}
 	return false
+}
+
+func (fe *frontendServer) loginHandler(w http.ResponseWriter, r *http.Request) {
+	templates.ExecuteTemplate(w, "login", map[string]interface{}{
+		"platform_css":      plat.css,
+		"platform_name":     plat.provider,
+		"is_cymbal_brand":   isCymbalBrand,
+		"deploymentDetails": deploymentDetailsMap,
+	})
+}
+
+func (fe *frontendServer) apiLoginHandler(w http.ResponseWriter, r *http.Request) {
+	log := r.Context().Value(ctxKeyLog{}).(logrus.FieldLogger)
+
+	var creds struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.WithError(err).Error("Unable to read request body")
+		http.Error(w, "Unable to read body", http.StatusInternalServerError)
+		return
+	}
+	defer r.Body.Close()
+
+	err = json.Unmarshal(body, &creds)
+	if err != nil {
+		log.WithError(err).Error("Failed to parse JSON request")
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	// Get user service address from environment variable with fallback
+	userSvcAddr := os.Getenv("USER_SERVICE_ADDR")
+	if userSvcAddr == "" {
+		userSvcAddr = "http://userservice:1122"
+	}
+
+	// Send POST request to user service
+	resp, err := http.Post(userSvcAddr+"/user/login",
+		"application/json", bytes.NewBuffer(body))
+
+	if err != nil {
+		log.WithError(err).Error("Failed to connect to user service")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		responseBody, _ := ioutil.ReadAll(resp.Body)
+		log.WithFields(logrus.Fields{
+			"status_code": resp.StatusCode,
+			"response":    string(responseBody),
+		}).Error("User service authentication failed")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	// 设置登录状态 cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:   "logged_in",
+		Value:  "true",
+		MaxAge: cookieMaxAge,
+	})
+	// 返回成功状态
+	w.WriteHeader(http.StatusOK)
 }

@@ -1,12 +1,14 @@
 package org.example.userservice.service;
 
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import org.example.userservice.entity.User;
+
 import org.example.userservice.mapper.UserMapper;
 import org.example.userservice.model.dto.LoginDTO;
 import org.example.userservice.model.dto.LoginResult;
+import org.example.userservice.model.entity.User;
+import org.example.userservice.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,9 @@ import org.springframework.stereotype.Service;
 public class UserService {
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private JwtUtils jwtUtils;
 
     public LoginResult login(LoginDTO loginDTO) {
         if(StringUtils.isBlank(loginDTO.getUsername())
@@ -31,7 +36,14 @@ public class UserService {
             return LoginResult.error(403,"密码错误");
         }
 
-        return LoginResult.success(user);
+        // 生成token
+        String token = jwtUtils.generateToken(user);
+
+        // 创建成功结果并设置token
+        LoginResult result = LoginResult.success(user);
+        result.setToken(token);
+
+        return result;
     }
 
 }
