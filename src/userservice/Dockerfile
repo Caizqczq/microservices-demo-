@@ -4,7 +4,7 @@ WORKDIR /workspace/app
 
 # 安装必要的构建工具和依赖
 RUN apt-get update && \
-    apt-get install -y maven protobuf-compiler
+    apt-get install -y maven
 
 # 复制源代码和配置文件
 COPY pom.xml .

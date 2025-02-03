@@ -19,6 +19,12 @@ spec:
           ports:
           - containerPort: 9555
           env:
+          - name: SPRING_DATASOURCE_URL
+            value: "jdbc:mysql://mysql-user:3306/userservice?useSSL=false&allowPublicKeyRetrieval=true"
+          - name: SPRING_DATASOURCE_USERNAME
+            value: "root"
+          - name: SPRING_DATASOURCE_PASSWORD
+            value: "123456"
           - name: PORT
             value: "9555"
           - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
@@ -36,19 +42,10 @@ spec:
           resources:
             requests:
               cpu: 100m
-              memory: 64Mi
+              memory: 256Mi
             limits:
               cpu: 200m
-              memory: 128Mi
-          readinessProbe:
-            initialDelaySeconds: 15
-            exec:
-              command: ["/bin/grpc_health_probe", "-addr=:9555", "-rpc-timeout=5s"]
-          livenessProbe:
-            initialDelaySeconds: 15
-            periodSeconds: 10
-            exec:
-              command: ["/bin/grpc_health_probe", "-addr=:9555", "-rpc-timeout=5s"]
+              memory: 256Mi
 ---
 apiVersion: v1
 kind: Service

@@ -23,11 +23,17 @@ spec:
         - name: MYSQL_DATABASE
           value: "userservice"
         readinessProbe:
-          periodSeconds: 5
+          initialDelaySeconds: 30  
+          periodSeconds: 10        
+          timeoutSeconds: 5        
+          failureThreshold: 3      
           tcpSocket:
             port: 3306
         livenessProbe:
-          periodSeconds: 5
+          initialDelaySeconds: 60  
+          periodSeconds: 10        
+          timeoutSeconds: 5        
+          failureThreshold: 3     
           tcpSocket:
             port: 3306
         volumeMounts:

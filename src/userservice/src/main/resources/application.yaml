@@ -4,9 +4,14 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/userservice?useSSL=false&allowPublicKeyRetrieval=true
-    username: root
-    password: "123456"
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/userservice?useSSL=false&allowPublicKeyRetrieval=true}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:123456}
+    druid:
+      max-wait: 30000
+      break-after-acquire-failure: true
+      fail-fast: true
+
 
 server:
   port: 1122

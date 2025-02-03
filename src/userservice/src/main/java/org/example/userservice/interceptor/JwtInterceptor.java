@@ -18,7 +18,6 @@ public class JwtInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        // 放行登录接口
         if (request.getRequestURI().equals("/user/login")) {
             return true;
         }
