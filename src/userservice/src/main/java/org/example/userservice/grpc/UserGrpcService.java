@@ -3,8 +3,9 @@ package org.example.userservice.grpc;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
+import org.example.userservice.constant.result.Result;
 import org.example.userservice.model.dto.LoginDTO;
-import org.example.userservice.model.dto.LoginResult;
+import org.example.userservice.model.dto.RegisterDTO;
 import org.example.userservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.slf4j.Logger;
@@ -20,7 +21,6 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
     @Override
     public void login(LoginRequest request, StreamObserver<LoginResponse> responseObserver) {
         try {
-
             if (request.getUsername().isEmpty() || request.getPassword().isEmpty()) {
                 responseObserver.onError(
                         Status.INVALID_ARGUMENT
@@ -34,7 +34,7 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
             loginDTO.setUsername(request.getUsername());
             loginDTO.setPassword(request.getPassword());
 
-            LoginResult result = userService.login(loginDTO);
+            Result result = userService.login(loginDTO);
 
             switch (result.getCode()) {
                 case 200: // 成功
@@ -90,5 +90,21 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
                             .asRuntimeException()
             );
         }
+    }
+
+    @Override
+    public void register(RegisterRequest request, StreamObserver<RegisterResponse> responseObserver) {
+        RegisterDTO registerDTO = new RegisterDTO();
+        registerDTO.setUsername(request.getUsername());
+        registerDTO.setPassword(request.getPassword());
+
+        Result result = userService.register(registerDTO);
+
+        RegisterResponse response=RegisterResponse.newBuilder()
+                .setCode(result.getCode())
+                .setMessage(result.getMessage())
+                .build();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 }

@@ -18,15 +18,14 @@ public class GrpcInterception implements ServerInterceptor {
             Metadata headers,
             ServerCallHandler<ReqT, RespT> next) {
 
-        // 获取方法全名
+                
         String methodName = call.getMethodDescriptor().getFullMethodName();
 
-        // 登录接口不需要验证token
-        if (methodName.contains("Login")) {
+      
+        if (methodName.contains("Login") || methodName.contains("Health")|| methodName.contains("ServerReflection")||methodName.contains("Register")) {
             return next.startCall(call, headers);
         }
 
-        // 从metadata中获取token
         String token = headers.get(Metadata.Key.of("authorization", Metadata.ASCII_STRING_MARSHALLER));
 
         if (token == null || token.isEmpty()) {

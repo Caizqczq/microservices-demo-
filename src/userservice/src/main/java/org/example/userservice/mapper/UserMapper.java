@@ -1,11 +1,15 @@
 package org.example.userservice.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.example.userservice.model.dto.LoginDTO;
 import org.example.userservice.model.entity.User;
 
 
 @Mapper
-public interface UserMapper extends BaseMapper<User> {
+public interface UserMapper {
+    User selectOne(LoginDTO loginDTO);
 
+    int insert(User user);
+
+    int checkUsername(String username);
 }
